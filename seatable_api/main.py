@@ -1279,6 +1279,28 @@ class SeaTableAPI(object):
         return self.get_custom_file_info(custom_folder_path, file_name)
 
     @check_auth
+    def upload_bytes_file_to_custom_folder(self, name, content: bytes, custom_folder_path=None, replace=False):
+        if not custom_folder_path:
+            custom_folder_path = '/'
+
+        upload_link_dict = self.get_custom_file_upload_link(parse.unquote(custom_folder_path))
+        upload_link = upload_link_dict.get('upload_link') + '?ret-json=1'
+        parent_path = upload_link_dict.get('parent_path')
+        relative_path = upload_link_dict.get('relative_path')
+
+        response = post(upload_link, data={
+            'parent_dir': parent_path,
+            'relative_path': relative_path,
+            'replace': 1 if replace else 0
+        }, files={
+            'file': (name, BytesIO(content))
+        }, timeout=self.timeout)
+        d = response.json()[0]
+
+        file_name = d.get('name')
+        return self.get_custom_file_info(custom_folder_path, file_name)
+
+    @check_auth
     def get_custom_file_info(self, path, name):
         url = self._app_custom_asset_file_url()
         params = {'path': path, 'name': name}
