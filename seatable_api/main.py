@@ -1255,7 +1255,7 @@ class SeaTableAPI(object):
             f.write(response.content)
 
     @check_auth
-    def upload_local_file_to_custom_folder(self, local_path, custom_folder_path = None, name=None, ):
+    def upload_local_file_to_custom_folder(self, local_path, custom_folder_path = None, name=None, replace=False):
         if not name:
             name = local_path.strip('/').split('/')[-1]
         if not custom_folder_path:
@@ -1269,7 +1269,7 @@ class SeaTableAPI(object):
         response = requests.post(upload_link, data={
             'parent_dir': parent_path,
             'relative_path': relative_path,
-            'replace': 0
+            'replace': 1 if replace else 0
         }, files={
             'file': (name, open(local_path, 'rb'))
         }, timeout=self.timeout)
