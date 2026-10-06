@@ -1288,12 +1288,12 @@ class SeaTableAPI(object):
         parent_path = upload_link_dict.get('parent_path')
         relative_path = upload_link_dict.get('relative_path')
 
-        response = post(upload_link, data={
+        response = requests.post(upload_link, data={
             'parent_dir': parent_path,
             'relative_path': relative_path,
             'replace': 1 if replace else 0
         }, files={
-            'file': (name, BytesIO(content))
+            'file': (name, io.BytesIO(content))
         }, timeout=self.timeout)
         d = response.json()[0]
 
